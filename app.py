@@ -160,6 +160,7 @@ letter_template = """
         <h1>Your Personalized Letter</h1>
         <textarea readonly>{{ letter }}</textarea><br>
         <button onclick="copyToClipboard()">Copy to Clipboard</button><br><br>
+        <button><a href="/">Return to Home</a></button><br><br>
         <button><a href="https://www.sdsu.edu/feedback" target="_blank">Submit to SDSU Feedback Page</a></button>
     </div>
     <script>
@@ -182,9 +183,19 @@ def home():
 @app.route("/generate", methods=["POST"])
 def generate():
     reasons = request.form.getlist("reason")
-    name = request.form.get("name", "A Concerned Student")
-    major = request.form.get("major", "Your Major")
-    year = request.form.get("year", "Your Year")
+    name = request.form.get("name", "{Your Name}")
+    major = request.form.get("major", "{Your Major}")
+    year = request.form.get("year", "{Your Year}")
+
+    # Detailed explanations for reasons
+    reason_explanations = {
+        "Promotes Critical Thinking": "Multiple-choice tests often rely on rote memorization. Reducing their use encourages assignments that challenge students to think critically and analytically.",
+        "Encourages Deep Learning": "Alternative assessments promote deeper understanding by requiring students to connect concepts and explain their reasoning.",
+        "Prepares Students for Real-World Problem Solving": "Real-world problems require creative and analytical solutions, which are better practiced through open-ended assessments.",
+        "Reduces Test Anxiety": "Multiple-choice tests can heighten stress due to time pressure and tricky options. Reducing their use helps alleviate this anxiety.",
+        "Increases Fairness in Grading": "Subjective assessments such as essays or projects provide fairer evaluations of a student’s true understanding.",
+        "Encourages Creativity and Expression": "Non-multiple-choice formats allow students to express their knowledge in diverse ways, fostering creativity."
+    }
 
     # Generate letter content
     letter = f"Dear SDSU Administration,\n\n"
@@ -193,7 +204,8 @@ def generate():
     if reasons:
         letter += "Here are my reasons:\n"
         for reason in reasons:
-            letter += f"- {reason}\n"
+            explanation = reason_explanations.get(reason, "")
+            letter += f"- {reason}: {explanation}\n"
     else:
         letter += "I believe multiple-choice tests hinder students' ability to develop critical skills required in the real world.\n\n"
 
